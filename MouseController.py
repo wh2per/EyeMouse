@@ -35,8 +35,7 @@ class MouseController:
     # pyautogui.keyUp('shift')
     # pyautogui.hotkey('ctrl', 'c')
 
-m = MouseController
+    # m = MouseController
+    # m.moveMouseXY(800,800)
 
-m.moveMouseXY(800,800) 
-
-#pyautogui.moveTo(500, 500, duration=2, tween=pyautogui.easeInOutQuad)
+    # pyautogui.moveTo(500, 500, duration=2, tween=pyautogui.easeInOutQuad)

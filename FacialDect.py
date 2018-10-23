@@ -3,162 +3,117 @@ import numpy as np
 import argparse
 
 import math
-from scipy.spatial import distance
 
 
-#ap = argparse.ArgumentParser()
-#ap.add_argument("-i", "--image", required = True, help = "Path to the image")
-#args = vars(ap.parse_args())
+def detect(gray,frame):
+    """ input = greyscale imeage
+        output = boxes
+    """
+    # faces are the tuples of 4 numbers
+    # x,y => upperleft corner coordinates of face
+    # width(w) of rectangle in the face
+    # height(h) of rectangle in the face
+    # grey means the input image to the detector
+    # 1.3 is the kernel size or size of image reduced when applying the detection
+    # 5 is the number of neighbors after which we accept that is a face
 
-#img = cv2.imread(args["image"])
-img = cv2.imread("test.jpg", 0)
-img = cv2.medianBlur(img,5)
-cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
-
-cv2.namedWindow("Display", flags= cv2.WINDOW_AUTOSIZE)
-
-circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,100,
-                           param1=50,param2=25,minRadius=10,maxRadius=30)
-
-circles = np.uint16(np.around(circles))
-
-#coordinates of pupils
-point1x = 0.0
-point1y = 0.0
-point2x = 0.0
-point2y = 0.0
-
-#coordinates of object on forehead
-leftpointx = 0
-leftpointy = 0
-rightpointx = 0
-rightpointy = 0
-
-#coordinates of pupils in case hough circles doesn't work
-leftpointx2 = 0
-leftpointy2 = 0
-rightpointx2 = 0
-rightpointy2 = 0
-
-objectexist = 0
-
-m = 0
-k = 0
-
-dist = 0 #distance of pupils in pixels
-dist2 = 0 #distance of object in pixels
-
-mm = 100 #distance of object in mm
+    #faces = faceCascade.detectMultiScale(gray, 1.3,5)
+    # Detect faces in the image
+    faces = faceCascade.detectMultiScale(
+        gray,
+        scaleFactor=1.05,
+        minNeighbors=5,
+        minSize=(100, 100),
+        flags=cv2.CASCADE_SCALE_IMAGE
+    )
+    # Now iterate over the faces and detect eyes
 
 
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-n = 1
+        # Arguements => image, top-left coordinates, bottomright coordinates, color, rectangle border thickness
 
+        # we now need two region of interests(ROI) grey and color for eyes one to detect and another to draw rectangle
+        roi_gray = gray[y:y + h, x:x + w]
+        roi_color = frame[y:y + h, x:x + w]
+        # Detect eyes now
+        eyes = eyeCascade.detectMultiScale(roi_gray, 1.1, 3)
+        # Detect pupil
+        # Now draw rectangle over the eyes
+        for (ex, ey, ew, eh) in eyes:
+            pup = roi_color[ey:ey + eh, ex:ex + ew]
 
-for i in circles[0,:]:
-    # draw the outer circle
+            """
+            pup = cv2.medianBlur(pup,5)
+            try:
+                cpup = cv2.cvtColor(pup,cv2.COLOR_GRAY2BGR)
+                circles = cv2.HoughCircles(pup, cv2.HOUGH_GRADIENT, 1, 100, param1=50, param2=25, minRadius=10, maxRadius=30)
+                print("success")
+                circles = np.uint16(np.around(circles))
+                drawpupil(circles,cpup)
+            except cv2.error:
+                print("no file")
+            """
+            #cv2.imshow("a",pup)
+            #cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
 
-    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
-    # draw the center of the circle
-    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
-    if n == 1:
-        n = 2
-        point1x = float(i[0])
-        point1y = float(i[1])
-    elif n==2 :
-        point2x = float(i[0])
-        point2y = float(i[1])
+        # Converting the OpenCV rectangle coordinates to Dlib rectangle
+        dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
 
-    #print(" " + point1x + ", " + point1y + ", " + point2x + ", " + point2y)
+        landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
 
-print(point1x)
-print(point1y)
-print(point2x)
-print(point2y)
-
-
-
-
-
-dist = math.hypot(point2x - point1x, point2y - point1y) #ipd in pixels
-
-#if dist < 10000:
-print(dist)
-
-
-
-def my_mouse_callback(event, x, y, flags, param):
-    global m
-    global k
-    global leftpointx
-    global leftpointy
-    global rightpointx
-    global rightpointy
-
-    global leftpointx2
-    global leftpointy2
-    global rightpointx2
-    global rightpointy2
-
-    global objectexist
-
-    global dist
-    global dist2
-    if event==cv2.EVENT_LBUTTONDBLCLK:
-        m = m+1
-
-        #print(x)
-        if m == 1:
-            leftpointx = x
-            leftpointy = y
-        elif m == 2:
-            rightpointx = x
-            rightpointy = y
-            dist2 = math.hypot(rightpointx - leftpointx, rightpointy - leftpointy)
-            print( "object distance = " + str(dist2))
-
-            if dist < 10000:
-                distanceInMM = dist * (mm / dist2)  # ipd in mm
-                print( "IPD in mm = " + str(distanceInMM))
-    if dist > 10000:
-        if event==cv2.EVENT_RBUTTONDBLCLK: #used if hough circles doesn't work
-            k = k+1
-            if dist2 == 0:
-                dist2 == 500
-
-            #print(x)
-            if k == 1:
-                leftpointx2 = x
-                leftpointy2 = y
-            elif k == 2:
-                rightpointx2 = x
-                rightpointy2 = y
-                dist = math.hypot(rightpointx2 - leftpointx2, rightpointy2 - leftpointy2)
-                print("IPD in pixels = " + str(dist))
-
-                distanceInMM = dist * (mm / dist2)  # ipd in mm
-                print( "IPD in mm = " + str(distanceInMM))
-
-cv2.setMouseCallback("Display",my_mouse_callback,cimg)
+        landmarks_display = landmarks[RIGHT_EYE_POINTS]
 
 
+        xmax = 0
+        ymax = 0
+        xmin = 100000
+        ymin = 100000
+        for idx, point in enumerate(landmarks_display):
+            pos = (point[0, 0], point[0, 1])
+            if point[0, 0] > xmax:
+                xmax = point[0, 0]
+            if point[0, 0] < xmin:
+                xmin = point[0, 0]
+            if point[0, 1] > ymax:
+                ymax = point[0, 1]
+            if point[0, 1] < ymin:
+                ymin = point[0, 1]
 
+            eyeimg = frame[ymin-30:ymax+30, xmin-30:xmax+30]
+            try:
+                eyeimg = cv2.GaussianBlur(eyeimg,(3,3),0)
+                eyegray = cv2.cvtColor(eyeimg,cv2.COLOR_BGR2GRAY)
+                circles = cv2.HoughCircles(eyegray, cv2.HOUGH_GRADIENT, 1, 50, param1=50, param2=25, minRadius=0, maxRadius=0)
+                if circles is not None:
+                    circles = np.uint16(np.around(circles))
+                    for i in circles[0, :]:
+                        print((i[0], i[1]), i[2])
+                        #cv2.circle(eyeimg, (i[0], i[1]), i[2], color=(255, 255, 0), thickness=1)
+                        cv2.circle(eyeimg, (i[0], i[1]), 1, color=(0, 0, 255), thickness=3)
+                cv2.imshow("a",eyeimg)
+            except cv2.error:
+                print("no img")
 
+            cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
+    return frame
 
-
-
-
-
-while(1):
-    cv2.imshow("Display",cimg)
-
-    if dist2 == 0 and dist < 10000:
-        c = cv2.waitKey(0)
-        if c == 32: #spacebar
-            dist2 = 500
-            distanceInMM = dist * (mm / dist2)  # ipd in mm
-            print("IPD in mm = " + str(distanceInMM))
-
-    if cv2.waitKey(15)%0x100==27:break    # waiting for clicking escape key
-cv2.destroyWindow("Display")
+# Capture video from webcam
+video_capture = cv2.VideoCapture(0)
+# Run the infinite loop
+while True:
+    # Read each frame
+    _, frame = video_capture.read()
+    # Convert frame to grey because cascading only works with greyscale image
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Call the detect function with grey image and colored frame
+    canvas = detect(gray, frame)
+    # Show the image in the screen
+    cv2.imshow("Video", canvas)
+    # Put the condition which triggers the end of program
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+video_capture.release()
+cv2.destroyAllWindows()

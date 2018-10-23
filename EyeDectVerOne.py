@@ -29,7 +29,7 @@ MOUTH_INNER_POINTS = list(range(61, 68))
 
 userValidPos = ()
 
-def pupilDetect(frame,landmarks_display):
+def pupilDetect(frame, landmarks_display):
     xmin = sys.maxsize
     xmax = 0
     ymin = sys.maxsize
@@ -43,13 +43,13 @@ def pupilDetect(frame,landmarks_display):
         cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
         if point[0, 0] > xmax:
-            xmax = point[0, 0] + 20
+            xmax = point[0, 0] + 10
         if point[0, 0] < xmin:
-            xmin = point[0, 0] - 20
+            xmin = point[0, 0] - 10
         if point[0, 1] > ymax:
-            ymax = point[0, 1] + 20
+            ymax = point[0, 1] + 10
         if point[0, 1] < ymin:
-            ymin = point[0, 1] - 20
+            ymin = point[0, 1] - 10
 
     try:
         eyeimg = frame[ymin:ymax, xmin:xmax]
@@ -82,7 +82,6 @@ def pupilDetect(frame,landmarks_display):
         else:
             denominator += 1
 
-        #cv2.imshow("b", eyeimg)
     except cv2.error:
         print("no img")
 
@@ -90,23 +89,30 @@ def pupilDetect(frame,landmarks_display):
 
 def checkValidUser(faces):
     global userValidPos
-    thresh = 100
+    thresh = 20
     if userValidPos == ():
         print("no user has been registered")
         return 1
     else:
-        for(x,y,w,h) in userValidPos:
-            ux = x -thresh
-            uy = y -thresh
-            uw = w +thresh
-            uh = h +thresh
-        for(x,y,w,h) in faces:
-            if ux > x or uy > y or ux+uw<x+w or uy+uh<y+h :
-                print("not registered user")
-                return 0
-            else:
+        ux = userValidPos[0]
+        uy = userValidPos[1]
+        uw = userValidPos[2]
+        uh = userValidPos[3]
+        x = faces[0]
+        y = faces[1]
+        w = faces[2]
+        h = faces[3]
+
+        if ux - thresh < x < ux + thresh and uy - thresh < y < uy + thresh:
+            if ux + uw - thresh < x + w < ux + uw + thresh and uy + uh - thresh < y + h < uy + uh + thresh:
                 print("valid user")
+                userValidPos = (x, y, w, h)
                 return 2
+        else:
+            print("fa", x, y, x + w, y + h)
+            print("user", ux, uy, ux + uw, uy + uh)
+            print("not registered user")
+            return 0
 
 """ 
     def = dlib를 이용 얼굴과 눈을 찾는 함수
@@ -118,18 +124,30 @@ def detect(gray,frame):
     global userValidPos
     # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
-    checkValid = checkValidUser(faces)
 
-    if checkValid != 0:
-        # 얼굴에서 랜드마크를 찾자
-        for (x, y, w, h) in faces:
-            # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+    # 얼굴에서 랜드마크를 찾자
+    for (x, y, w, h) in faces:
+        # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        checkValid = checkValidUser((x, y, w, h))
+
+        if checkValid != 0:
+            # face를 이미지로 잘라서 red point 인식하기
+            faceImg = frame[y:y + h, x:x + w]
+            faceGray = cv2.cvtColor(faceImg, cv2.COLOR_BGR2GRAY)
+            customPoint = customCascade.detectMultiScale(faceGray)
+
+            if customPoint != ():
+                userValidPos = (x, y, w, h)
+                print(userValidPos)
+
+            for (px, py, pw, ph) in customPoint:
+                cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
 
             if checkValid == 2:
                 # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
                 dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
-
                 # 랜드마크 포인트들 지정
                 landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
                 # 각 눈동자 위치 검출, 기본값 (0,0)
@@ -137,16 +155,6 @@ def detect(gray,frame):
                 rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS])
 
 
-            # face를 이미지로 잘라서 red point 인식하기
-            faceImg = frame[y:y + h, x:x + w]
-            faceGray = cv2.cvtColor(faceImg, cv2.COLOR_BGR2GRAY)
-            customPoint = customCascade.detectMultiScale(faceGray)
-
-            if customPoint != ():
-                userValidPos = faces
-
-            for (px, py, pw, ph) in customPoint:
-                cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
 
     return frame
 
@@ -163,17 +171,20 @@ while True:
 
     # 만들어준 얼굴 눈 찾기
     canvas = detect(gray, frame)
-
-    print(userValidPos)
-    cv2.imshow("haha", canvas)
     # 찾은 이미지 보여주기
+    cv2.imshow("haha", canvas)
 
-    # q를 누르면 종료
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    if cv2.waitKey(1) & 0xFF == ord('r'):
+
+    kb = cv2.waitKey(1) & 0xFF
+
+    if kb == ord('r'):
         print("reset")
         userValidPos = ()
+
+    # q를 누르면 종료
+    if kb == ord('q'):
+        break
+
 # 끝
 video_capture.release()
 cv2.destroyAllWindows()

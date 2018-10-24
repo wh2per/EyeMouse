@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a52179c1-66cc-4576-9389-003d7be8b345" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/EyeDectVerTwo.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blogPrac.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EyeDectVerOne.py" beforeDir="false" afterPath="$PROJECT_DIR$/EyeDectVerOne.py" afterDir="false" />
     </list>
@@ -12,22 +14,23 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1540342569814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1540359448616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EyeMouse$MouseController.coverage" NAME="MouseController Coverage Results" MODIFIED="1540212240802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FUSProjectUsageTrigger">
     <session id="1163458274">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="9" />
+          <entry key="project.closed" value="10" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.11" value="1" />
+          <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="1" />
           <entry key="project.open.time.6" value="1" />
           <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="3" />
-          <entry key="project.opened" value="9" />
+          <entry key="project.opened" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -44,14 +47,14 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="1567" />
-          <entry key="txt" value="41" />
+          <entry key="py" value="1573" />
+          <entry key="txt" value="45" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="41" />
-          <entry key="Python" value="1567" />
+          <entry key="PLAIN_TEXT" value="45" />
+          <entry key="Python" value="1573" />
         </counts>
       </usages-collector>
     </session>
@@ -61,12 +64,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="82" column="1" lean-forward="true" selection-start-line="82" selection-start-column="1" selection-end-line="85" selection-end-column="60" />
+            <state relative-caret-position="82">
+              <caret line="229" column="52" lean-forward="true" selection-start-line="229" selection-start-column="52" selection-end-line="229" selection-end-column="52" />
               <folding>
-                <element signature="e#0#16#0" expanded="true" />
-                <marker date="1540342579962" expanded="true" signature="913:1601" ph="..." />
-                <marker date="1540342579962" expanded="true" signature="1649:1655" ph="..." />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -247,26 +248,33 @@
       <option name="project" value="LOCAL" />
       <updated>1540297048666</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade #2">
+      <created>1540359155866</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1540359155866</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="419" y="0" width="1508" height="1047" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15645514" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.10082873" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49781182" weight="0.29276314" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49723756" weight="0.29276314" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49966645" weight="0.32894737" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4993094" weight="0.32894737" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5021882" side_tool="true" visible="true" weight="0.29276314" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="10" sideWeight="0.50276244" side_tool="true" visible="true" weight="0.29276314" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -284,7 +292,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade #2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade #2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/EyedectEx.py" />
@@ -293,12 +302,10 @@
     <entry file="file://$PROJECT_DIR$/venv/MouseController.py" />
     <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="82" column="1" lean-forward="true" selection-start-line="82" selection-start-column="1" selection-end-line="85" selection-end-column="60" />
+        <state relative-caret-position="82">
+          <caret line="229" column="52" lean-forward="true" selection-start-line="229" selection-start-column="52" selection-end-line="229" selection-end-column="52" />
           <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <marker date="1540342579962" expanded="true" signature="913:1601" ph="..." />
-            <marker date="1540342579962" expanded="true" signature="1649:1655" ph="..." />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

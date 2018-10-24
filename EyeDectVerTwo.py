@@ -1,6 +1,12 @@
+import threading
+
 import numpy as np
 import cv2
 import dlib
+import math
+import time
+#import pyautogui
+
 import sys
 
 imagePath = "steph.jpg"
@@ -24,11 +30,12 @@ LEFT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
 
-userValidPos = ()
+detectrunning = 0
+userValid = 0
 userlefteye = ()
 userrighteye = ()
 
-def detectEye(landmarks_display, dir):
+def detectEye(landmarks_display,dir):
     xmin = sys.maxsize
     xmax = 0
     ymin = sys.maxsize
@@ -58,7 +65,9 @@ def detectEye(landmarks_display, dir):
 
 
 
+
 def pupilDetect(frame, landmarks_display, eyepos):
+
     numerator = 0
     denominator = 0
     ret = (0, 0)
@@ -109,90 +118,47 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
     return ret
 
-def checkValidUser(faces):
-    global userValidPos
-    thresh = 20
-    if userValidPos == ():
-        print("no user has been registered")
-        return 1
-    else:
-        ux = userValidPos[0]
-        uy = userValidPos[1]
-        uw = userValidPos[2]
-        uh = userValidPos[3]
-        x = faces[0]
-        y = faces[1]
-        w = faces[2]
-        h = faces[3]
-
-        if ux - thresh < x < ux + thresh and uy - thresh < y < uy + thresh:
-            if ux + uw - thresh < x + w < ux + uw + thresh and uy + uh - thresh < y + h < uy + uh + thresh:
-                print("valid user")
-                userValidPos = (x, y, w, h)
-                return 2
-        else:
-            # print("fa", x, y, x + w, y + h)
-            # print("user", ux, uy, ux + uw, uy + uh)
-            print("not registered user")
-            return 0
 
 """ 
     def = dlib를 이용 얼굴과 눈을 찾는 함수
     input = 그레이 스케일 이미지
     output = 얼굴 중요 68개의 포인트 에 그려진 점 + 이미지
 """
-
-def detect(gray, frame):
-    global userValidPos
+def detect(gray,frame):
     # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
+    redPoint = customCascade.detectMultiScale(gray)
 
+    numerator = 0
+    denominator = 0
 
     # 얼굴에서 랜드마크를 찾자
     for (x, y, w, h) in faces:
+
         # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        checkValid = checkValidUser((x, y, w, h))
 
-        if checkValid != 0:
-            # face를 이미지로 잘라서 red point 인식하기
-            faceImg = frame[y:y + h, x:x + w]
-            # faceGray = cv2.cvtColor(faceImg, cv2.COLOR_BGR2GRAY)
-            faceGray = gray[y:y + h, x:x + w]
-            customPoint = customCascade.detectMultiScale(faceGray)
+        # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
+        dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
 
-            if customPoint != ():
-                userValidPos = (x, y, w, h)
-                print(userValidPos)
-                for (px, py, pw, ph) in customPoint:
-                    cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
+        # 랜드마크 포인트들 지정
+        landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
 
+        # get the eye area
+        detectEye(landmarks[LEFT_EYE_POINTS], 0)
+        detectEye(landmarks[RIGHT_EYE_POINTS], 1)
 
-            # if change != to == redstar dection is working
-            if checkValid != 2:
-                # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
-                dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
-                # 랜드마크 포인트들 지정
-                landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
-
-                # get the eye area
-                detectEye(landmarks[LEFT_EYE_POINTS], 0)
-                detectEye(landmarks[RIGHT_EYE_POINTS], 1)
-
-                # 각 눈동자 위치 검출, 기본값 (0,0)
-                leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-                rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userrighteye)
-                print("left",leftPupilPos)
-                print("right", rightPupilPos)
-
-
+        # 각 눈동자 위치 검출, 기본값 (0,0)
+        leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
+        print("Left : " + str(leftPupilPos[0]) + "," + str(leftPupilPos[1]))
+        rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS],userrighteye)
+        print("Right : " + str(rightPupilPos[0]) + "," + str(rightPupilPos[1]))
 
     return frame
 
 # 웹캠에서 이미지 가져오기
 video_capture = cv2.VideoCapture(0)
 framecount = 0
-
 
 while True:
     # 웹캠 이미지를 프레임으로 자름
@@ -205,22 +171,13 @@ while True:
 
     # 만들어준 얼굴 눈 찾기
     canvas = detect(gray, frame)
-    # 찾은 이미지 보여주기
+
     cv2.imshow("haha", canvas)
-
-
-    kb = cv2.waitKey(1) & 0xFF
-
-    if kb == ord('r'):
-        print("reset")
-        userValidPos = ()
-        userlefteye = ()
-        userrighteye =()
+    # 찾은 이미지 보여주기
 
     # q를 누르면 종료
-    if kb == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
 # 끝
 video_capture.release()
 cv2.destroyAllWindows()

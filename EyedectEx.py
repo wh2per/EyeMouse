@@ -212,6 +212,7 @@ def detect(gray,frame):
 
 # 웹캠에서 이미지 가져오기
 video_capture = cv2.VideoCapture(0)
+video_capture.set(cv2.CAP_PROP_FPS, 60)
 
 while True:
     # 웹캠 이미지를 프레임으로 자름

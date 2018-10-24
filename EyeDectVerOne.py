@@ -10,7 +10,7 @@ PREDICTOR_PATH = "shape_predictor_68_face_landmarks.dat"
 
 
 faceCascade = cv2.CascadeClassifier(FACECASCADE_PATH)
-customCascade = cv2.CascadeClassifier(CUSTOMCASCADE_PATH);
+customCascade = cv2.CascadeClassifier(CUSTOMCASCADE_PATH)
 predictor = dlib.shape_predictor(PREDICTOR_PATH)
 
 
@@ -24,6 +24,7 @@ LEFT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
 
+count = 0
 userValidPos = ()
 userlefteye = ()
 userrighteye = ()
@@ -73,9 +74,9 @@ def pupilDetect(frame, landmarks_display, eyepos):
         # /------- decreasing the size of the white region -------------/#
         erosion = cv2.erode(thres, kernel, iterations=20)
         # /------- removing small noise inside the white image ---------/#
-        dilation = cv2.dilate(erosion, kernel, iterations=40)
+        dilation = cv2.dilate(erosion, kernel, iterations=45)
         # /------- decreasing the size of the white region -------------/#
-        erosion = cv2.erode(dilation, kernel, iterations=2)
+        erosion = cv2.erode(dilation, kernel, iterations=30)
         # /-------- finding the contours -------------------------------/#
         image, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
@@ -101,7 +102,7 @@ def pupilDetect(frame, landmarks_display, eyepos):
             cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
 
-        cv2.imshow("b", eyeimg)
+        #cv2.imshow("b", eyeimg)
         #cv2.imshow("a", thres)
 
     except cv2.error:
@@ -193,7 +194,6 @@ def detect(gray, frame):
 video_capture = cv2.VideoCapture(0)
 framecount = 0
 
-
 while True:
     # 웹캠 이미지를 프레임으로 자름
     _, frame = video_capture.read()
@@ -207,7 +207,6 @@ while True:
     canvas = detect(gray, frame)
     # 찾은 이미지 보여주기
     cv2.imshow("haha", canvas)
-
 
     kb = cv2.waitKey(1) & 0xFF
 

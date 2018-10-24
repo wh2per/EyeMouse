@@ -43,7 +43,7 @@ def detect(gray,frame):
 
 # 웹캠에서 이미지 가져오기
 video_capture = cv2.VideoCapture(0)
-
+#video_capture.set(cv2.CAP_PROP_FPS, 120)
 while True:
     # 웹캠 이미지를 프레임으로 자름
     _, frame = video_capture.read()
@@ -51,9 +51,13 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # 만들어준 얼굴 눈 찾기
-    canvas = detect(gray, frame)
+    #canvas = detect(gray, frame)
+
+    fps = video_capture.get(cv2.CAP_PROP_FPS)
+    print(fps)
+    resize(frame)
     # 찾은 이미지 보여주기
-    cv2.imshow("haha", canvas)
+    cv2.imshow("haha", frame)
 
     # q를 누르면 종료
     if cv2.waitKey(1) & 0xFF == ord('q'):

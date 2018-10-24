@@ -1,10 +1,9 @@
 import numpy as np
 import cv2
 import dlib
-import math
-import time
 import pyautogui
-import MouseController
+pyautogui.FAILSAFE = False
+import ctypes
 
 import sys
 
@@ -27,11 +26,41 @@ LEFT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
 
+# 모니터 해상도
+user32 = ctypes.windll.user32
+screen_width = user32.GetSystemMetrics(0)
+screen_height = user32.GetSystemMetrics(1)
+
+# 사용자 시선 초기값 세팅
+userEyeInit = [500,700,220,320]     # x는 200, y는 100
+
 
 detectrunning = 0
 userValidPos = ()
 userlefteye = ()
 userrighteye = ()
+
+def mouseRatio(cx,cy):
+    ret = (0, 0)
+
+    global screen_height
+    global screen_width
+    global userEyeInit
+
+    xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
+    ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
+
+    print('xmul = '+str(xmul))
+    print('ymul = '+str(ymul))
+
+    x = int(cx - userEyeInit[0]) * int(xmul)
+    y = int(cy - userEyeInit[2]) * int(ymul)
+
+    ret = (x,y)
+    print(ret)
+    return ret
+
+
 
 def detectEye(landmarks_display, dir):
 
@@ -124,8 +153,8 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
                 # print cx,cy
                 cv2.circle(eyeimg, (cx, cy), 2, (0, 0, 255), thickness=-1)  # red point
-                ret = (cx, cy)
                 #pyautogui.moveTo(cx, cy)
+                ret = mouseRatio(cx, cy)
         else:
             denominator += 1
 
@@ -135,7 +164,7 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
 
         cv2.imshow("b", eyeimg)
-        cv2.imshow("a", thres)
+        #cv2.imshow("a", thres)
         #cv2.imshow("a", thres)
 
     except cv2.error:
@@ -203,7 +232,7 @@ def detect(gray, frame):
 
 
             # if change != to == redstar dection is working
-            if checkValid != 2:
+            if checkValid != 3:
                 # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
                 dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
                 # 랜드마크 포인트들 지정
@@ -215,9 +244,11 @@ def detect(gray, frame):
 
                 # 각 눈동자 위치 검출, 기본값 (0,0)
                 leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
+                print(leftPupilPos[0], leftPupilPos[1])
+                pyautogui.moveTo(leftPupilPos[0], leftPupilPos[1])
                 rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userrighteye)
-                print("left",leftPupilPos)
-                print("right", rightPupilPos)
+                #print("left",leftPupilPos)
+                #print("right", rightPupilPos)
 
     return frame
 

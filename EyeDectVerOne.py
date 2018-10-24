@@ -4,17 +4,16 @@ import dlib
 import math
 import time
 import pyautogui
+import MouseController
 
 import sys
 
-imagePath = "steph.jpg"
 FACECASCADE_PATH = "haarcascade_frontalface_default.xml"
 CUSTOMCASCADE_PATH = "cascade2000_30.xml"
 PREDICTOR_PATH = "shape_predictor_68_face_landmarks.dat"
 
-
 faceCascade = cv2.CascadeClassifier(FACECASCADE_PATH)
-customCascade = cv2.CascadeClassifier(CUSTOMCASCADE_PATH);
+customCascade = cv2.CascadeClassifier(CUSTOMCASCADE_PATH)
 predictor = dlib.shape_predictor(PREDICTOR_PATH)
 
 
@@ -101,17 +100,14 @@ def pupilDetect(frame, landmarks_display, eyepos):
         eyegray = cv2.cvtColor(eyeimg, cv2.COLOR_BGR2GRAY)
         equ = cv2.equalizeHist(eyegray)
         thres = cv2.inRange(equ, 0, 20)
-        #thres = cv2.resize(thres, None, fx=15, fy=15, interpolation=cv2.INTER_CUBIC)
         kernel = np.ones((3, 3), np.uint8)
 
         # /------- decreasing the size of the white region -------------/#
         erosion = cv2.erode(thres, kernel, iterations=20)
         # /------- removing small noise inside the white image ---------/#
-        dilation = cv2.dilate(erosion, kernel, iterations=40)
+        dilation = cv2.dilate(erosion, kernel, iterations=45)
         # /------- decreasing the size of the white region -------------/#
-
-        erosion = cv2.erode(dilation, kernel, iterations=25)
-        erosion = cv2.erode(dilation, kernel, iterations=2)
+        erosion = cv2.erode(dilation, kernel, iterations=30)
 
         # /-------- finding the contours -------------------------------/#
         image, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -222,19 +218,6 @@ def detect(gray, frame):
                 rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userrighteye)
                 print("left",leftPupilPos)
                 print("right", rightPupilPos)
-
-
-        # 랜드마크 포인트들 지정
-        landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
-
-        detectEye(frame,landmarks[LEFT_EYE_POINTS],0)
-        detectEye(frame, landmarks[RIGHT_EYE_POINTS], 1)
-        # 각 눈동자 위치 검출, 기본값 (0,0)
-        leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-        print("Left : " + str(leftPupilPos[0]) + "," + str(leftPupilPos[1]))
-        rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS],userrighteye)
-        print("Right : " + str(rightPupilPos[0]) + "," + str(rightPupilPos[1]))
-
 
     return frame
 

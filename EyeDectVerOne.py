@@ -83,7 +83,7 @@ def pupilDetect(frame,landmarks_display,eyepos):
         # /------- removing small noise inside the white image ---------/#
         dilation = cv2.dilate(erosion, kernel, iterations=40)
         # /------- decreasing the size of the white region -------------/#
-        erosion = cv2.erode(dilation, kernel, iterations=2)
+        erosion = cv2.erode(dilation, kernel, iterations=25)
         # /-------- finding the contours -------------------------------/#
         image, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
@@ -110,7 +110,7 @@ def pupilDetect(frame,landmarks_display,eyepos):
 
 
         cv2.imshow("b", eyeimg)
-        #cv2.imshow("a", thres)
+        cv2.imshow("a", thres)
 
     except cv2.error:
         print("no img")

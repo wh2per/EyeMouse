@@ -3,9 +3,6 @@ import cv2
 import dlib
 import math
 import time
-import pyautogui
-import MouseController
-
 import sys
 
 FACECASCADE_PATH = "haarcascade_frontalface_default.xml"
@@ -22,16 +19,49 @@ JAWLINE_POINTS = list(range(0, 17))
 RIGHT_EYEBROW_POINTS = list(range(17, 22))
 LEFT_EYEBROW_POINTS = list(range(22, 27))
 NOSE_POINTS = list(range(27, 36))
-RIGHT_EYE_POINTS = list(range(36, 42))
-LEFT_EYE_POINTS = list(range(42, 48))
+LEFT_EYE_POINTS = list(range(36, 42))
+RIGHT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
 
-
 detectrunning = 0
+count = 0
 userValidPos = ()
 userlefteye = ()
 userrighteye = ()
+userLeftLand = ()
+userRightLand = ()
+posStayCount = 0
+prevMousePos = ()
+mouseFocus = 0
+
+def checkMouseFocus(pos):
+    global posStayCount
+    global prevMousePos
+    global mouseFocus
+
+    countThr = 5
+    moveThr = 20
+    if pos != (0,0):
+        if prevMousePos == ():
+            prevMousePos = pos
+            return mouseFocus
+        elif posStayCount < countThr:
+            posStayCount = posStayCount + 1
+            if pos[0] - moveThr < prevMousePos[0] < pos[0] + moveThr and pos[1] - moveThr < prevMousePos[1] < pos[1] + moveThr:
+               mouseFocus = 1
+            else:
+                print("not")
+                posStayCount = 0
+                mouseFocus = 0
+            prevMousePos = pos
+            return 0
+        elif posStayCount == countThr:
+            print("cl")
+            posStayCount = 0
+            prevMousePos = ()
+            return mouseFocus
+
 
 def detectEye(landmarks_display, dir):
 
@@ -83,10 +113,10 @@ def pupilDetect(frame,landmarks_display,eyepos):
 
         # left
         if dir == 0:
-            userlefteye = (xmin, xmax, ymin, ymax)
+            userlefteye = [xmin, xmax, ymin, ymax]
         # right
         elif dir == 1:
-            userrighteye = (xmin, xmax, ymin, ymax)
+            userrighteye = [xmin, xmax, ymin, ymax]
 
 
 
@@ -133,9 +163,7 @@ def pupilDetect(frame, landmarks_display, eyepos):
             pos = (point[0, 0], point[0, 1])
             cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
-
-        cv2.imshow("b", eyeimg)
-        cv2.imshow("a", thres)
+        #cv2.imshow("b", eyeimg)
         #cv2.imshow("a", thres)
 
     except cv2.error:
@@ -143,32 +171,27 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
     return ret
 
-def checkValidUser(faces):
+def faceDetect(faces, gray, frame):
     global userValidPos
-    thresh = 20
-    if userValidPos == ():
-        print("no user has been registered")
-        return 1
-    else:
-        ux = userValidPos[0]
-        uy = userValidPos[1]
-        uw = userValidPos[2]
-        uh = userValidPos[3]
-        x = faces[0]
-        y = faces[1]
-        w = faces[2]
-        h = faces[3]
 
-        if ux - thresh < x < ux + thresh and uy - thresh < y < uy + thresh:
-            if ux + uw - thresh < x + w < ux + uw + thresh and uy + uh - thresh < y + h < uy + uh + thresh:
-                print("valid user")
-                userValidPos = (x, y, w, h)
-                return 2
-        else:
-            # print("fa", x, y, x + w, y + h)
-            # print("user", ux, uy, ux + uw, uy + uh)
-            print("not registered user")
-            return 0
+    # 얼굴에서 랜드마크를 찾자
+    for (x, y, w, h) in faces:
+        # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        # face를 이미지로 잘라서 red star 인식하기
+        faceImg = frame[y:y + h, x:x + w]
+        faceGray = gray[y:y + h, x:x + w]
+        # find red star
+        customPoint = customCascade.detectMultiScale(faceGray)
+
+        if customPoint != ():
+            # if found valid face save the pos
+            userValidPos = (x, y, w, h)
+            print("user pos: ", userValidPos)
+
+            for (px, py, pw, ph) in customPoint:
+                cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
 
 """ 
     def = dlib를 이용 얼굴과 눈을 찾는 함수
@@ -178,53 +201,46 @@ def checkValidUser(faces):
 
 def detect(gray, frame):
     global userValidPos
-    # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
-    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
+    global mouseFocus
+    global userlefteye
+    global userrighteye
+    global userLeftLand
+    global userRightLand
 
-
-    # 얼굴에서 랜드마크를 찾자
-    for (x, y, w, h) in faces:
+    # init the face pos
+    if userValidPos == ():
+        # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
+        faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
+        faceDetect(faces, gray, frame)
+    else:
         # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        checkValid = checkValidUser((x, y, w, h))
+        cv2.rectangle(frame, (userValidPos[0], userValidPos[1]), (userValidPos[0] + userValidPos[2], userValidPos[1] + userValidPos[3]), (255, 0, 0), 2)
+        if userLeftLand == () and userRightLand == ():
+            # set the eye pos
+            # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
+            dlib_rect = dlib.rectangle(int(userValidPos[0]), int(userValidPos[1]), int(userValidPos[0] + userValidPos[2],), int(userValidPos[1] + userValidPos[3]))
+            # 랜드마크 포인트들 지정
+            landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
+            userLeftLand = landmarks[LEFT_EYE_POINTS]
+            userRightLand = landmarks[RIGHT_EYE_POINTS]
+        else:
+            if userLeftLand != ():
+                detectEye(userLeftLand, 0)
+            if userRightLand != ():
+                detectEye(userRightLand, 1)
 
-        if checkValid != 0:
-            # face를 이미지로 잘라서 red point 인식하기
-            faceImg = frame[y:y + h, x:x + w]
-            # faceGray = cv2.cvtColor(faceImg, cv2.COLOR_BGR2GRAY)
-            faceGray = gray[y:y + h, x:x + w]
-            customPoint = customCascade.detectMultiScale(faceGray)
-
-            if customPoint != ():
-                userValidPos = (x, y, w, h)
-                print(userValidPos)
-                for (px, py, pw, ph) in customPoint:
-                    cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
-
-
-            # if change != to == redstar dection is working
-            if checkValid != 2:
-                # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
-                dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
-                # 랜드마크 포인트들 지정
-                landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
-
-                # get the eye area
-                detectEye(landmarks[LEFT_EYE_POINTS], 0)
-                detectEye(landmarks[RIGHT_EYE_POINTS], 1)
-
-                # 각 눈동자 위치 검출, 기본값 (0,0)
-                leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-                rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userrighteye)
-                print("left",leftPupilPos)
-                print("right", rightPupilPos)
-
+        # detect pupil
+        if userlefteye != ():
+            cv2.rectangle(frame,(userlefteye[0],userlefteye[2]),(userlefteye[1],userlefteye[3]),(0,255,0),2)
+            pupilDetect(frame,userLeftLand,userlefteye)
+        if userrighteye != ():
+            cv2.rectangle(frame, (userrighteye[0], userrighteye[2]), (userrighteye[1], userrighteye[3]), (0, 255, 0), 2)
+            pupilDetect(frame,userRightLand,userrighteye)
     return frame
 
 # 웹캠에서 이미지 가져오기
 video_capture = cv2.VideoCapture(0)
 framecount = 0
-
 
 while True:
     # 웹캠 이미지를 프레임으로 자름
@@ -240,14 +256,18 @@ while True:
     # 찾은 이미지 보여주기
     cv2.imshow("haha", canvas)
 
-
     kb = cv2.waitKey(1) & 0xFF
 
     if kb == ord('r'):
         print("reset")
         userValidPos = ()
         userlefteye = ()
-        userrighteye =()
+        userrighteye = ()
+        userLeftLand = ()
+        userRightLand =()
+        posStayCount = 0
+        prevMousePos = ()
+        mouseFocus = 0
 
     # q를 누르면 종료
     if kb == ord('q'):

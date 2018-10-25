@@ -20,27 +20,68 @@ JAWLINE_POINTS = list(range(0, 17))
 RIGHT_EYEBROW_POINTS = list(range(17, 22))
 LEFT_EYEBROW_POINTS = list(range(22, 27))
 NOSE_POINTS = list(range(27, 36))
-RIGHT_EYE_POINTS = list(range(36, 42))
-LEFT_EYE_POINTS = list(range(42, 48))
+LEFT_EYE_POINTS = list(range(36, 42))
+RIGHT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
+
+# 사용자 눈 이미지에서의 좌표값
+lcx = 0
+lcy = 0
+rcx = 0
+rcy = 0
 
 # 모니터 해상도
 user32 = ctypes.windll.user32
 screen_width = user32.GetSystemMetrics(0)
 screen_height = user32.GetSystemMetrics(1)
-xmul = 0
-ymul = 0
 
 # 사용자 시선 초기값 세팅
 userEyeInit = [420,780,220,360] # x최소, x최대, y최소, y최대
 leftPupilPos = [0,0]
 rightPupilPos = [0,0]
 
+xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
+ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
+
 detectrunning = 0
+count = 0
 userValidPos = ()
 userlefteye = ()
 userrighteye = ()
+userLeftLand = ()
+userRightLand = ()
+posStayCount = 0
+prevMousePos = ()
+mouseFocus = 0
+
+def checkMouseFocus(pos):
+    global posStayCount
+    global prevMousePos
+    global mouseFocus
+
+    countThr = 5
+    moveThr = 20
+    if pos != (0,0):
+        if prevMousePos == ():
+            prevMousePos = pos
+            return mouseFocus
+        elif posStayCount < countThr:
+            posStayCount = posStayCount + 1
+            if pos[0] - moveThr < prevMousePos[0] < pos[0] + moveThr and pos[1] - moveThr < prevMousePos[1] < pos[1] + moveThr:
+               mouseFocus = 1
+            else:
+                print("not")
+                posStayCount = 0
+                mouseFocus = 0
+            prevMousePos = pos
+            return 0
+        elif posStayCount == countThr:
+            print("cl")
+            posStayCount = 0
+            prevMousePos = ()
+            return mouseFocus
+
 
 def refactoringEyePoint():
     global screen_height
@@ -54,35 +95,27 @@ def refactoringEyePoint():
     global xmul
     global ymul
 
-    userEyeInit[0] = userEyeInit[0] - ((screen_width/2)-leftPupilPos[0])/xmul
-    userEyeInit[1] = userEyeInit[1] - ((screen_width/2)-leftPupilPos[0])/xmul
+    userEyeInit[0] = userEyeInit[0] + ((screen_width / 2) - leftPupilPos[0]) / xmul
+    userEyeInit[1] = userEyeInit[1] + ((screen_width / 2) - leftPupilPos[0]) / xmul
+    userEyeInit[2] = userEyeInit[2] + ((screen_height / 2) - leftPupilPos[1]) / ymul
+    userEyeInit[3] = userEyeInit[3] + ((screen_height / 2) - leftPupilPos[1]) / ymul
 
     print("refactor")
 
-
-
-def mouseRatio(cx,cy):
-    ret = (0, 0)
-
-    global screen_height
-    global screen_width
+def mouseRatio(cx,cy,dir):
     global userEyeInit
     global leftPupilPos
     global xmul
     global ymul
 
-    xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
-    ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
-
-   # print('xmul = '+str(xmul))
-    #print('ymul = '+str(ymul))
-
-    leftPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
-    leftPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
-
+    if dir == 0:
+        leftPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
+        leftPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
+    elif dir == 1:
+        rightPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
+        rightPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
 
 def detectEye(landmarks_display, dir):
-
     xmin = sys.maxsize
     xmax = 0
     ymin = sys.maxsize
@@ -90,7 +123,6 @@ def detectEye(landmarks_display, dir):
 
     global userlefteye
     global userrighteye
-
     for idx, point in enumerate(landmarks_display):
         pos = (point[0, 0], point[0, 1])
         if point[0, 0] > xmax:
@@ -111,13 +143,31 @@ def detectEye(landmarks_display, dir):
             userrighteye = (xmin,xmax,ymin,ymax)
 
 
-def pupilDetect(frame, landmarks_display, eyepos):
+def pupilDetect(frame, dir):
     global leftPupilPos
     global rightPupilPos
+    global userlefteye
+    global userrighteye
+    global userLeftLand
+    global userRightLand
+
+    global cx
+    global cy
+
+    global lcx
+    global lcy
+    global rcx
+    global rcy
 
     numerator = 0
     denominator = 0
     ret = (0, 0)
+    if dir == 0:
+        eyepos = userlefteye
+        landmarks_display = userLeftLand
+    if dir == 1:
+        eyepos = userrighteye
+        landmarks_display = userRightLand
     try:
         eyeimg = frame[eyepos[2]:eyepos[3], eyepos[0]:eyepos[1]]
         eyeimg = cv2.resize(eyeimg, None, fx=15, fy=15, interpolation=cv2.INTER_CUBIC)
@@ -127,11 +177,11 @@ def pupilDetect(frame, landmarks_display, eyepos):
         kernel = np.ones((3, 3), np.uint8)
 
         # /------- decreasing the size of the white region -------------/#
-        erosion = cv2.erode(thres, kernel, iterations=20)
+        erosion = cv2.erode(thres, kernel, iterations=30)
         # /------- removing small noise inside the white image ---------/#
         dilation = cv2.dilate(erosion, kernel, iterations=45)
         # /------- decreasing the size of the white region -------------/#
-        erosion = cv2.erode(dilation, kernel, iterations=30)
+        erosion = cv2.erode(dilation, kernel, iterations=20)
 
         # /-------- finding the contours -------------------------------/#
         image, contours, hierarchy = cv2.findContours(erosion, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -148,52 +198,50 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
                 # print cx,cy
                 cv2.circle(eyeimg, (cx, cy), 2, (0, 0, 255), thickness=-1)  # red point
-                print(str(cx)+', '+str(cy))
-                mouseRatio(cx,cy)
-                ret = (leftPupilPos[0], leftPupilPos[1])
+                mouseRatio(cx,cy,dir)
+                pyautogui.moveTo(leftPupilPos[0],leftPupilPos[1])
+                if dir == 0:
+                    lcx = cx
+                    lcy = cy
+                    cv2.imshow("b", eyeimg)
+                elif dir == 1:
+                    rcx = cx
+                    rcy = cy
 
         else:
             denominator += 1
 
         for idx, point in enumerate(landmarks_display):
             pos = (point[0, 0], point[0, 1])
-            #cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
+            cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
-
-        cv2.imshow("b", eyeimg)
-        #cv2.imshow("a", thres)
+            #cv2.imshow("a", thres)
 
     except cv2.error:
         print("no img")
 
-    return ret
 
-def checkValidUser(faces):
+def faceDetect(faces, gray, frame):
     global userValidPos
-    thresh = 20
-    if userValidPos == ():
-        print("no user has been registered")
-        return 1
-    else:
-        ux = userValidPos[0]
-        uy = userValidPos[1]
-        uw = userValidPos[2]
-        uh = userValidPos[3]
-        x = faces[0]
-        y = faces[1]
-        w = faces[2]
-        h = faces[3]
 
-        if ux - thresh < x < ux + thresh and uy - thresh < y < uy + thresh:
-            if ux + uw - thresh < x + w < ux + uw + thresh and uy + uh - thresh < y + h < uy + uh + thresh:
-                print("valid user")
-                userValidPos = (x, y, w, h)
-                return 2
-        else:
-            # print("fa", x, y, x + w, y + h)
-            # print("user", ux, uy, ux + uw, uy + uh)
-            print("not registered user")
-            return 0
+    # 얼굴에서 랜드마크를 찾자
+    for (x, y, w, h) in faces:
+        # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        # face를 이미지로 잘라서 red star 인식하기
+        faceImg = frame[y:y + h, x:x + w]
+        faceGray = gray[y:y + h, x:x + w]
+        # find red star
+        customPoint = customCascade.detectMultiScale(faceGray)
+
+        if customPoint != ():
+            # if found valid face save the pos
+            userValidPos = (x, y, w, h)
+            print("user pos: ", userValidPos)
+
+            for (px, py, pw, ph) in customPoint:
+                cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
 
 """ 
     def = dlib를 이용 얼굴과 눈을 찾는 함수
@@ -203,57 +251,48 @@ def checkValidUser(faces):
 
 def detect(gray, frame):
     global userValidPos
+    global mouseFocus
+    global userlefteye
+    global userrighteye
+    global userLeftLand
+    global userRightLand
     global leftPupilPos
-    global rightPupilPos
+    global lcx
+    global lcy
 
-    # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
-    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
-
-    left = (0,0)
-    right = (0,0)
-
-    # 얼굴에서 랜드마크를 찾자
-    for (x, y, w, h) in faces:
+    # init the face pos
+    if userValidPos == ():
+        # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
+        faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
+        faceDetect(faces, gray, frame)
+    else:
         # 얼굴: 이미지 프레임에 (x,y)에서 시작, (x+넓이, y+길이)까지의 사각형을 그림(색 255 0 0 , 굵기 2)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        checkValid = checkValidUser((x, y, w, h))
+        cv2.rectangle(frame, (userValidPos[0], userValidPos[1]), (userValidPos[0] + userValidPos[2], userValidPos[1] + userValidPos[3]), (255, 0, 0), 2)
+        if userLeftLand == () and userRightLand == ():
+            # set the eye pos
+            # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
+            dlib_rect = dlib.rectangle(int(userValidPos[0]), int(userValidPos[1]), int(userValidPos[0] + userValidPos[2],), int(userValidPos[1] + userValidPos[3]))
+            # 랜드마크 포인트들 지정
+            landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
+            userLeftLand = landmarks[LEFT_EYE_POINTS]
+            userRightLand = landmarks[RIGHT_EYE_POINTS]
+        else:
+            if userLeftLand != ():
+                detectEye(userLeftLand, 0)
+            if userRightLand != ():
+                detectEye(userRightLand, 1)
 
-        if checkValid != 0:
-            # face를 이미지로 잘라서 red point 인식하기
-            faceImg = frame[y:y + h, x:x + w]
-            # faceGray = cv2.cvtColor(faceImg, cv2.COLOR_BGR2GRAY)
-            faceGray = gray[y:y + h, x:x + w]
-            customPoint = customCascade.detectMultiScale(faceGray)
-
-            if customPoint != ():
-                userValidPos = (x, y, w, h)
-                print(userValidPos)
-                for (px, py, pw, ph) in customPoint:
-                    cv2.rectangle(faceImg, (px, py), (px + pw, py + ph), (0, 255, 0), 2)
-
-
-            # if change != to == redstar dection is working
-            if checkValid != 3:
-                # 오픈 CV 이미지를 dlib용 사각형으로 변환하고
-                dlib_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
-                # 랜드마크 포인트들 지정
-                landmarks = np.matrix([[p.x, p.y] for p in predictor(frame, dlib_rect).parts()])
-
-                # get the eye area
-                detectEye(landmarks[LEFT_EYE_POINTS], 0)
-                detectEye(landmarks[RIGHT_EYE_POINTS], 1)
-
-                # 각 눈동자 위치 검출, 기본값 (0,0)
-                left = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-                leftPupilPos[0] = left[0]
-                leftPupilPos[1] = left[1]
-                print('leftPupil[0] : '+str(leftPupilPos[0])+', leftPupil[1] : '+str(leftPupilPos[1])+', InitEyepos[0] : '+str(userEyeInit[0])+', InitEyepos[1] : '+str(userEyeInit[1]))
-                right = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userlefteye)
-                rightPupilPos[0] = right[0]
-                rightPupilPos[1] = right[1]
-                #print("left",leftPupilPos)
-                #print("right", rightPupilPos)
-
+        # detect pupil
+        if userlefteye != ():
+            cv2.rectangle(frame,(userlefteye[0],userlefteye[2]),(userlefteye[1],userlefteye[3]),(0,255,0),2)
+            pupilDetect(frame,0)
+            print('xmul : '+str(xmul)+', ymul : '+str(ymul))
+            print('xmin : '+str(userEyeInit[0])+', xmax : '+str(userEyeInit[1]))
+            print('cx : '+str(lcx)+', cy : '+str(lcy))
+            print(leftPupilPos)
+        if userrighteye != ():
+            cv2.rectangle(frame, (userrighteye[0], userrighteye[2]), (userrighteye[1], userrighteye[3]), (0, 255, 0), 2)
+            pupilDetect(frame,1)
     return frame
 
 # 웹캠에서 이미지 가져오기
@@ -273,8 +312,6 @@ while True:
     # 만들어준 얼굴 눈 찾기
     canvas = detect(gray, frame)
 
-    pyautogui.moveTo(leftPupilPos[0], leftPupilPos[1])
-
     # 찾은 이미지 보여주기
     cv2.imshow("haha", canvas)
 
@@ -285,11 +322,32 @@ while True:
         print("reset")
         userValidPos = ()
         userlefteye = ()
-        userrighteye =()
-        userEyeInit = [420, 780, 220, 360]  # x는 200, y는 100
+        userrighteye = ()
+        userLeftLand = ()
+        userRightLand =()
+        posStayCount = 0
+        prevMousePos = ()
+        mouseFocus = 0
 
-    if kb == ord('f'):
+
+    if kb == ord('f'):      # 커서 재 계산
         refactoringEyePoint()
+
+    if kb == ord('z'):      # xmin 입력
+        userEyeInit[0] = lcx
+
+    if kb == ord('x'):      # xmax 입력
+        userEyeInit[1] = lcx
+
+    if kb == ord('c'):      # ymin 입력
+        userEyeInit[2] = lcy
+
+    if kb == ord('v'):      # ymax 입력
+        userEyeInit[3] = lcy
+
+    if kb == ord('b'):      # 배율 재 계산
+        xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
+        ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
 
     # q를 누르면 종료
     if kb == ord('q'):

@@ -4,7 +4,6 @@ import dlib
 import pyautogui
 pyautogui.FAILSAFE = False
 import ctypes
-
 import sys
 
 FACECASCADE_PATH = "haarcascade_frontalface_default.xml"
@@ -30,15 +29,37 @@ MOUTH_INNER_POINTS = list(range(61, 68))
 user32 = ctypes.windll.user32
 screen_width = user32.GetSystemMetrics(0)
 screen_height = user32.GetSystemMetrics(1)
+xmul = 0
+ymul = 0
 
 # 사용자 시선 초기값 세팅
-userEyeInit = [500,700,220,320]     # x는 200, y는 100
-
+userEyeInit = [420,780,220,360] # x최소, x최대, y최소, y최대
+leftPupilPos = [0,0]
+rightPupilPos = [0,0]
 
 detectrunning = 0
 userValidPos = ()
 userlefteye = ()
 userrighteye = ()
+
+def refactoringEyePoint():
+    global screen_height
+    global screen_width
+
+    global leftPupilPos
+    global rightPupilPos
+
+    global userEyeInit
+
+    global xmul
+    global ymul
+
+    userEyeInit[0] = userEyeInit[0] - ((screen_width/2)-leftPupilPos[0])/xmul
+    userEyeInit[1] = userEyeInit[1] - ((screen_width/2)-leftPupilPos[0])/xmul
+
+    print("refactor")
+
+
 
 def mouseRatio(cx,cy):
     ret = (0, 0)
@@ -46,20 +67,18 @@ def mouseRatio(cx,cy):
     global screen_height
     global screen_width
     global userEyeInit
+    global leftPupilPos
+    global xmul
+    global ymul
 
     xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
     ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
 
-    print('xmul = '+str(xmul))
-    print('ymul = '+str(ymul))
+   # print('xmul = '+str(xmul))
+    #print('ymul = '+str(ymul))
 
-    x = int(cx - userEyeInit[0]) * int(xmul)
-    y = int(cy - userEyeInit[2]) * int(ymul)
-
-    ret = (x,y)
-    print(ret)
-    return ret
-
+    leftPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
+    leftPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
 
 
 def detectEye(landmarks_display, dir):
@@ -71,6 +90,7 @@ def detectEye(landmarks_display, dir):
 
     global userlefteye
     global userrighteye
+
     for idx, point in enumerate(landmarks_display):
         pos = (point[0, 0], point[0, 1])
         if point[0, 0] > xmax:
@@ -91,35 +111,10 @@ def detectEye(landmarks_display, dir):
             userrighteye = (xmin,xmax,ymin,ymax)
 
 
-
-
-def pupilDetect(frame,landmarks_display,eyepos):
-
-    global userlefteye
-    global userrighteye
-
-    if userlefteye == () or userrighteye == ():
-        for idx, point in enumerate(landmarks_display):
-            pos = (point[0, 0], point[0, 1])
-            if point[0, 0] > xmax:
-                xmax = point[0, 0] + 20
-            if point[0, 0] < xmin:
-                xmin = point[0, 0] - 20
-            if point[0, 1] > ymax:
-                ymax = point[0, 1] + 20
-            if point[0, 1] < ymin:
-                ymin = point[0, 1] - 20
-
-        # left
-        if dir == 0:
-            userlefteye = (xmin, xmax, ymin, ymax)
-        # right
-        elif dir == 1:
-            userrighteye = (xmin, xmax, ymin, ymax)
-
-
-
 def pupilDetect(frame, landmarks_display, eyepos):
+    global leftPupilPos
+    global rightPupilPos
+
     numerator = 0
     denominator = 0
     ret = (0, 0)
@@ -153,18 +148,19 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
                 # print cx,cy
                 cv2.circle(eyeimg, (cx, cy), 2, (0, 0, 255), thickness=-1)  # red point
-                #pyautogui.moveTo(cx, cy)
-                ret = mouseRatio(cx, cy)
+                print(str(cx)+', '+str(cy))
+                mouseRatio(cx,cy)
+                ret = (leftPupilPos[0], leftPupilPos[1])
+
         else:
             denominator += 1
 
         for idx, point in enumerate(landmarks_display):
             pos = (point[0, 0], point[0, 1])
-            cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
+            #cv2.circle(frame, pos, 2, color=(0, 255, 255), thickness=-1)
 
 
         cv2.imshow("b", eyeimg)
-        #cv2.imshow("a", thres)
         #cv2.imshow("a", thres)
 
     except cv2.error:
@@ -207,9 +203,14 @@ def checkValidUser(faces):
 
 def detect(gray, frame):
     global userValidPos
+    global leftPupilPos
+    global rightPupilPos
+
     # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
 
+    left = (0,0)
+    right = (0,0)
 
     # 얼굴에서 랜드마크를 찾자
     for (x, y, w, h) in faces:
@@ -243,10 +244,13 @@ def detect(gray, frame):
                 detectEye(landmarks[RIGHT_EYE_POINTS], 1)
 
                 # 각 눈동자 위치 검출, 기본값 (0,0)
-                leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-                print(leftPupilPos[0], leftPupilPos[1])
-                pyautogui.moveTo(leftPupilPos[0], leftPupilPos[1])
-                rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userrighteye)
+                left = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
+                leftPupilPos[0] = left[0]
+                leftPupilPos[1] = left[1]
+                print('leftPupil[0] : '+str(leftPupilPos[0])+', leftPupil[1] : '+str(leftPupilPos[1])+', InitEyepos[0] : '+str(userEyeInit[0])+', InitEyepos[1] : '+str(userEyeInit[1]))
+                right = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS], userlefteye)
+                rightPupilPos[0] = right[0]
+                rightPupilPos[1] = right[1]
                 #print("left",leftPupilPos)
                 #print("right", rightPupilPos)
 
@@ -268,6 +272,9 @@ while True:
 
     # 만들어준 얼굴 눈 찾기
     canvas = detect(gray, frame)
+
+    pyautogui.moveTo(leftPupilPos[0], leftPupilPos[1])
+
     # 찾은 이미지 보여주기
     cv2.imshow("haha", canvas)
 
@@ -279,6 +286,10 @@ while True:
         userValidPos = ()
         userlefteye = ()
         userrighteye =()
+        userEyeInit = [420, 780, 220, 360]  # x는 200, y는 100
+
+    if kb == ord('f'):
+        refactoringEyePoint()
 
     # q를 누르면 종료
     if kb == ord('q'):

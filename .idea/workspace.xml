@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a52179c1-66cc-4576-9389-003d7be8b345" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EyeDectVerOne.py" beforeDir="false" afterPath="$PROJECT_DIR$/EyeDectVerOne.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -12,7 +11,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1540385839181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1540464076220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EyeMouse$MouseController.coverage" NAME="MouseController Coverage Results" MODIFIED="1540212240802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FUSProjectUsageTrigger">
@@ -46,14 +45,14 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="2161" />
+          <entry key="py" value="3182" />
           <entry key="txt" value="46" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="46" />
-          <entry key="Python" value="2161" />
+          <entry key="Python" value="3182" />
         </counts>
       </usages-collector>
     </session>
@@ -63,11 +62,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="2" column="11" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
+            <state relative-caret-position="456">
+              <caret line="288" column="42" selection-start-line="288" selection-start-column="42" selection-end-line="288" selection-end-column="42" />
               <folding>
-                <marker date="1540386364702" expanded="true" signature="1157:1499" ph="..." />
-                <marker date="1540386364702" expanded="true" signature="1537:1543" ph="..." />
+                <element signature="e#0#18#0" expanded="true" />
+                <marker date="1540464076171" expanded="true" signature="1129:1469" ph="..." />
+                <marker date="1540464076171" expanded="true" signature="1638:1962" ph="..." />
+                <marker date="1540464076171" expanded="true" signature="2000:2006" ph="..." />
               </folding>
             </state>
           </provider>
@@ -138,10 +139,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
+    <option name="x" value="1912" />
     <option name="y" value="-8" />
-    <option name="width" value="816" />
-    <option name="height" value="576" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -276,15 +277,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="816" height="576" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2883598" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.116204694" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49654695" visible="true" weight="0.56462586" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49654695" visible="true" weight="0.19543974" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -344,11 +345,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="2" column="11" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
+        <state relative-caret-position="456">
+          <caret line="288" column="42" selection-start-line="288" selection-start-column="42" selection-end-line="288" selection-end-column="42" />
           <folding>
-            <marker date="1540386364702" expanded="true" signature="1157:1499" ph="..." />
-            <marker date="1540386364702" expanded="true" signature="1537:1543" ph="..." />
+            <element signature="e#0#18#0" expanded="true" />
+            <marker date="1540464076171" expanded="true" signature="1129:1469" ph="..." />
+            <marker date="1540464076171" expanded="true" signature="1638:1962" ph="..." />
+            <marker date="1540464076171" expanded="true" signature="2000:2006" ph="..." />
           </folding>
         </state>
       </provider>

@@ -143,33 +143,6 @@ def pupilDetect(frame, landmarks_display, eyepos):
 
     return ret
 
-def checkValidUser(faces):
-    global userValidPos
-    thresh = 20
-    if userValidPos == ():
-        #print("no user has been registered")
-        return 1
-    else:
-        ux = userValidPos[0]
-        uy = userValidPos[1]
-        uw = userValidPos[2]
-        uh = userValidPos[3]
-        x = faces[0]
-        y = faces[1]
-        w = faces[2]
-        h = faces[3]
-
-        if ux - thresh < x < ux + thresh and uy - thresh < y < uy + thresh:
-            if ux + uw - thresh < x + w < ux + uw + thresh and uy + uh - thresh < y + h < uy + uh + thresh:
-                #print("valid user")
-                userValidPos = (x, y, w, h)
-                return 2
-        else:
-            # print("fa", x, y, x + w, y + h)
-            # print("user", ux, uy, ux + uw, uy + uh)
-            #print("not registered user")
-            return 0
-
 def faceDetect(faces, gray, frame):
     global userValidPos
 

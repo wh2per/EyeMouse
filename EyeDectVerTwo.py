@@ -1,4 +1,5 @@
 import threading
+import queue
 
 import numpy as np
 import cv2
@@ -34,6 +35,31 @@ detectrunning = 0
 userValid = 0
 userlefteye = ()
 userrighteye = ()
+posStayCount = 0
+posQue = queue.Queue(10)
+prevMousePos = ()
+mouseFocus = 0
+
+def checkMouseFocus(pos):
+    global posStayCount
+    global prevMousePos
+    global mouseFocus
+
+    countThr = 10
+    moveThr = 5
+
+    if posStayCount < countThr:
+        posStayCount = posStayCount +1
+        if pos[0]-moveThr< prevMousePos[0] <pos[0]+moveThr and pos[1]-moveThr< prevMousePos[1]<pos[1]+moveThr:
+            prevMousePos = pos
+            mouseFocus = 1
+        else:
+            posStayCount = 0
+            mouseFocus = 0
+        return 0
+    elif posStayCount == countThr:
+        posStayCount = 0
+        return mouseFocus
 
 def detectEye(landmarks_display,dir):
     xmin = sys.maxsize
@@ -125,6 +151,7 @@ def pupilDetect(frame, landmarks_display, eyepos):
     output = 얼굴 중요 68개의 포인트 에 그려진 점 + 이미지
 """
 def detect(gray,frame):
+    global mouseFocus
     # 일단, 등록한 Cascade classifier 를 이용 얼굴을 찾음
     faces = faceCascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=5, minSize=(100, 100), flags=cv2.CASCADE_SCALE_IMAGE)
     redPoint = customCascade.detectMultiScale(gray)
@@ -150,10 +177,13 @@ def detect(gray,frame):
 
         # 각 눈동자 위치 검출, 기본값 (0,0)
         leftPupilPos = pupilDetect(frame, landmarks[LEFT_EYE_POINTS],userlefteye)
-        print("Left : " + str(leftPupilPos[0]) + "," + str(leftPupilPos[1]))
+        print("Left :", leftPupilPos)
         rightPupilPos = pupilDetect(frame, landmarks[RIGHT_EYE_POINTS],userrighteye)
-        print("Right : " + str(rightPupilPos[0]) + "," + str(rightPupilPos[1]))
+        #print("Right : ", rightPupilPos)
 
+        if checkMouseFocus(leftPupilPos) == 1:
+            mouseFocus = 0
+            print("clicked")
     return frame
 
 # 웹캠에서 이미지 가져오기
@@ -175,9 +205,17 @@ while True:
     cv2.imshow("haha", canvas)
     # 찾은 이미지 보여주기
 
+    key = cv2.waitKey(1) & 0xFF
     # q를 누르면 종료
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if key == ord('q'):
         break
+    elif key == ord('r'):
+        userValid = 0
+        userlefteye = ()
+        userrighteye = ()
+        posStayCount = 0
+        prevMousePos = ()
+        mouseFocus = 0
 # 끝
 video_capture.release()
 cv2.destroyAllWindows()

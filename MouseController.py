@@ -39,3 +39,5 @@ class MouseController:
     # m.moveMouseXY(800,800)
 
     # pyautogui.moveTo(500, 500, duration=2, tween=pyautogui.easeInOutQuad)
+
+    pyautogui.click(440,330)

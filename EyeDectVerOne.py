@@ -7,7 +7,7 @@ import ctypes
 import sys
 
 FACECASCADE_PATH = "haarcascade_frontalface_default.xml"
-CUSTOMCASCADE_PATH = "cascade2000_30.xml"
+CUSTOMCASCADE_PATH = "cascade2000_35.xml"
 PREDICTOR_PATH = "shape_predictor_68_face_landmarks.dat"
 
 faceCascade = cv2.CascadeClassifier(FACECASCADE_PATH)
@@ -25,7 +25,7 @@ RIGHT_EYE_POINTS = list(range(42, 48))
 MOUTH_OUTLINE_POINTS = list(range(48, 61))
 MOUTH_INNER_POINTS = list(range(61, 68))
 
-# 사용자 눈 이미지에서의 좌표값
+# 사용자 눈 "이미지" 에서의 좌표값
 lcx = 0
 lcy = 0
 rcx = 0
@@ -37,9 +37,13 @@ screen_width = user32.GetSystemMetrics(0)
 screen_height = user32.GetSystemMetrics(1)
 
 # 사용자 시선 초기값 세팅
-userEyeInit = [420,780,220,360] # x최소, x최대, y최소, y최대
-leftPupilPos = [0,0]
-rightPupilPos = [0,0]
+userEyeInit = [700,900,400,550] # x최소, x최대, y최소, y최대
+leftPupilPos = [0,0]        # 실제 모니터상 왼쪽눈의 의한 마우스 좌표
+rightPupilPos = [0,0]       # 실제 모니터상 오른쪽눈의 의한 마우스 좌표
+
+clickbool = 0
+clickCount = 0
+doubleCount = 0
 
 xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
 ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
@@ -107,15 +111,34 @@ def mouseRatio(cx,cy,dir):
     global leftPupilPos
     global xmul
     global ymul
+    global clickCount
+    global doubleCount
 
-    if dir == 0:
-        leftPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
-        leftPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
-    elif dir == 1:
+    if dir == 0:            # 왼쪽눈
+        cx = int(cx - userEyeInit[0]) * int(xmul)
+        cy = int(cy - userEyeInit[2]) * int(ymul)
+
+        if cx < leftPupilPos[0]+10 and cx > leftPupilPos[0]-10 :
+            if cy < leftPupilPos[1]+10 and cy > leftPupilPos[1]-10 :
+                clickCount += 1
+                doubleCount += 1
+
+        if clickCount == 4:
+            pyautogui.click(cx,cy)
+            clickCount = 0
+
+        if doubleCount == 8:
+            pyautogui.doubleClick(cx,cy)
+            doubleCount = 0
+
+        leftPupilPos[0] = cx
+        leftPupilPos[1] = cy
+
+    elif dir == 1:          # 오른쪽
         rightPupilPos[0] = int(cx - userEyeInit[0]) * int(xmul)
         rightPupilPos[1] = int(cy - userEyeInit[2]) * int(ymul)
 
-def detectEye(landmarks_display, dir):
+def detectEye (landmarks_display, dir):
     xmin = sys.maxsize
     xmax = 0
     ymin = sys.maxsize
@@ -123,16 +146,18 @@ def detectEye(landmarks_display, dir):
 
     global userlefteye
     global userrighteye
+
     for idx, point in enumerate(landmarks_display):
         pos = (point[0, 0], point[0, 1])
         if point[0, 0] > xmax:
-            xmax = point[0, 0] + 20
+            xmax = point[0, 0] + 27
         if point[0, 0] < xmin:
             xmin = point[0, 0] - 20
         if point[0, 1] > ymax:
             ymax = point[0, 1] + 20
         if point[0, 1] < ymin:
-            ymin = point[0, 1] - 20
+            ymin = point[0, 1] - 25
+
     #left
     if dir == 0:
         if userlefteye == ():
@@ -200,13 +225,16 @@ def pupilDetect(frame, dir):
                 cv2.circle(eyeimg, (cx, cy), 2, (0, 0, 255), thickness=-1)  # red point
                 mouseRatio(cx,cy,dir)
                 pyautogui.moveTo(leftPupilPos[0],leftPupilPos[1])
-                if dir == 0:
+                if dir == 0:        # 왼쪽 눈일 때
                     lcx = cx
                     lcy = cy
                     cv2.imshow("b", eyeimg)
-                elif dir == 1:
+                elif dir == 1:      # 오른쪽 눈일 때
                     rcx = cx
                     rcy = cy
+                    #if (rcx < userEyeInit2[0] or rcx > userEyeInit2[1]) and (rcy < userEyeInit2[2] or rcy > userEyeInit2[3]) and clickbool==1 :
+                    #    pyautogui.click(leftPupilPos[0],leftPupilPos[1])
+
 
         else:
             denominator += 1
@@ -288,6 +316,7 @@ def detect(gray, frame):
             pupilDetect(frame,0)
             print('xmul : '+str(xmul)+', ymul : '+str(ymul))
             print('xmin : '+str(userEyeInit[0])+', xmax : '+str(userEyeInit[1]))
+            print('ymin : ' + str(userEyeInit[2]) + ', ymax : ' + str(userEyeInit[3]))
             print('cx : '+str(lcx)+', cy : '+str(lcy))
             print(leftPupilPos)
         if userrighteye != ():
@@ -335,19 +364,25 @@ while True:
 
     if kb == ord('z'):      # xmin 입력
         userEyeInit[0] = lcx
+        #userEyeInit2[0] = rcx
 
     if kb == ord('x'):      # xmax 입력
         userEyeInit[1] = lcx
+        #userEyeInit2[1] = rcx
 
     if kb == ord('c'):      # ymin 입력
         userEyeInit[2] = lcy
+       # userEyeInit2[2] = rcy
 
     if kb == ord('v'):      # ymax 입력
         userEyeInit[3] = lcy
+        #userEyeInit2[3] = rcy
 
     if kb == ord('b'):      # 배율 재 계산
+        print('width : '+str(screen_width)+' height : '+str(screen_height))
         xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
         ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
+       #clickbool = 1
 
     # q를 누르면 종료
     if kb == ord('q'):

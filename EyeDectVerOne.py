@@ -41,7 +41,7 @@ userEyeInit = [700,900,400,550] # x최소, x최대, y최소, y최대
 leftPupilPos = [0,0]        # 실제 모니터상 왼쪽눈의 의한 마우스 좌표
 rightPupilPos = [0,0]       # 실제 모니터상 오른쪽눈의 의한 마우스 좌표
 
-clickbool = 0
+clickbool = -1
 clickCount = 0
 doubleCount = 0
 
@@ -123,11 +123,11 @@ def mouseRatio(cx,cy,dir):
                 clickCount += 1
                 doubleCount += 1
 
-        if clickCount == 4:
+        if clickCount == 3 and clickbool==1:
             pyautogui.click(cx,cy)
             clickCount = 0
 
-        if doubleCount == 8:
+        if doubleCount == 5 and clickbool==1:
             pyautogui.doubleClick(cx,cy)
             doubleCount = 0
 
@@ -223,17 +223,18 @@ def pupilDetect(frame, dir):
 
                 # print cx,cy
                 cv2.circle(eyeimg, (cx, cy), 2, (0, 0, 255), thickness=-1)  # red point
-                mouseRatio(cx,cy,dir)
-                pyautogui.moveTo(leftPupilPos[0],leftPupilPos[1])
+
                 if dir == 0:        # 왼쪽 눈일 때
-                    lcx = cx
-                    lcy = cy
+                    if pow(lcx-cx,2)+pow(lcy-cy,2)>3 :
+                        print('원래 좌표 : '+str(lcx)+', '+str(lcy)+"    바뀔자표 : "+str(cx)+", "+str(cy))
+                        lcx = cx
+                        lcy = cy
+                    mouseRatio(cx, cy, dir)
                     cv2.imshow("b", eyeimg)
                 elif dir == 1:      # 오른쪽 눈일 때
                     rcx = cx
                     rcy = cy
-                    #if (rcx < userEyeInit2[0] or rcx > userEyeInit2[1]) and (rcy < userEyeInit2[2] or rcy > userEyeInit2[3]) and clickbool==1 :
-                    #    pyautogui.click(leftPupilPos[0],leftPupilPos[1])
+                pyautogui.moveTo(leftPupilPos[0], leftPupilPos[1])
 
 
         else:
@@ -382,7 +383,10 @@ while True:
         print('width : '+str(screen_width)+' height : '+str(screen_height))
         xmul = int(screen_width) / int(userEyeInit[1] - userEyeInit[0])
         ymul = int(screen_height) / int(userEyeInit[3] - userEyeInit[2])
-       #clickbool = 1
+
+    if kb == ord('n'):  # 클릭 기능 토글
+        print('click!')
+        clickbool *= -1
 
     # q를 누르면 종료
     if kb == ord('q'):

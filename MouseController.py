@@ -40,4 +40,7 @@ class MouseController:
 
     # pyautogui.moveTo(500, 500, duration=2, tween=pyautogui.easeInOutQuad)
 
-    pyautogui.click(440,330)
+    if pow(4-2,2)+pow(4-2,2)<16 :
+        print('a')
+    else :
+        print('b')

@@ -3,8 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="a52179c1-66cc-4576-9389-003d7be8b345" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ClickView.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/EyeDectVerOne.py" beforeDir="false" afterPath="$PROJECT_DIR$/EyeDectVerOne.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MouseController.py" beforeDir="false" afterPath="$PROJECT_DIR$/MouseController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EyedectEx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MouseController.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,60 +15,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1541233711505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/EyeMouse$EyeDectVerOne.coverage" NAME="EyeDectVerOne Coverage Results" MODIFIED="1545071541781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/EyeMouse$MouseController.coverage" NAME="MouseController Coverage Results" MODIFIED="1541231652153" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-  </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="1163458274">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="18" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.10" value="3" />
-          <entry key="project.open.time.11" value="1" />
-          <entry key="project.open.time.12" value="2" />
-          <entry key="project.open.time.13" value="1" />
-          <entry key="project.open.time.2" value="2" />
-          <entry key="project.open.time.4" value="1" />
-          <entry key="project.open.time.6" value="1" />
-          <entry key="project.open.time.8" value="3" />
-          <entry key="project.open.time.9" value="4" />
-          <entry key="project.opened" value="19" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="py" value="13" />
-          <entry key="xml" value="2" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Python" value="13" />
-          <entry key="XML" value="2" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="py" value="5537" />
-          <entry key="txt" value="46" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="PLAIN_TEXT" value="46" />
-          <entry key="Python" value="5537" />
-        </counts>
-      </usages-collector>
-    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="129" column="27" selection-start-line="129" selection-start-column="27" selection-end-line="129" selection-end-column="27" />
+            <state relative-caret-position="-1406">
+              <caret line="114" column="22" selection-start-line="114" selection-start-column="22" selection-end-line="114" selection-end-column="22" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -74,41 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/tkinter/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="40584">
-              <caret line="2139" selection-start-line="2139" selection-end-line="2139" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ClickView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="16" column="17" selection-start-line="16" selection-start-column="17" selection-end-line="16" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/pyautogui/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="16245">
-              <caret line="855" selection-start-line="855" selection-end-line="855" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MouseController.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="45" column="18" lean-forward="true" selection-start-line="45" selection-start-column="18" selection-end-line="45" selection-end-column="18" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="245">
+              <caret line="824" selection-start-line="824" selection-end-line="825" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -136,6 +64,8 @@
     <findStrings>
       <find>&gt;&gt;&gt;</find>
       <find>lcx</find>
+      <find>click</find>
+      <find>imshow</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -152,17 +82,11 @@
       </list>
     </option>
   </component>
-  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsGulpfileManager">
-    <detection-done>true</detection-done>
-    <sorting>DEFINITION_ORDER</sorting>
-  </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1864" />
-    <option name="y" value="-14" />
-    <option name="width" value="974" />
-    <option name="height" value="1047" />
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -185,9 +109,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -247,8 +172,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.MouseController" />
       <item itemvalue="Python.EyeDectVerOne" />
+      <item itemvalue="Python.MouseController" />
     </list>
     <recent_temporary>
       <list>
@@ -267,6 +192,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1538680255737</updated>
+      <workItem from="1545065911875" duration="32000" />
+      <workItem from="1545066031749" duration="1443000" />
+      <workItem from="1545072471798" duration="228000" />
+      <workItem from="1545073878640" duration="394000" />
+      <workItem from="1548420397670" duration="56000" />
+      <workItem from="1548568153527" duration="44000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade">
       <created>1540297048665</created>
@@ -292,16 +223,18 @@
     <option name="localTasksCounter" value="4" />
     <servers />
   </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="2197000" />
+  </component>
   <component name="ToolWindowManager">
-    <frame x="792" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1119403" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1337953" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49626866" visible="true" weight="0.25841478" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49626866" weight="0.23101953" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -322,9 +255,6 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
-  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade" />
     <MESSAGE value="Merge branch 'master' of https://github.com/kingjakeu/EyeMouse into develop-wh2per&#10;&#10;# Conflicts:&#10;#&#9;.idea/EyeMouse.iml&#10;#&#9;.idea/misc.xml&#10;#&#9;venv/pyvenv.cfg&#10;&#10;Eyedetect &amp; Pupildetect upgrade #2" />
@@ -337,12 +267,15 @@
     <entry file="file://$PROJECT_DIR$/venv/MouseController.py" />
     <entry file="file://$PROJECT_DIR$/blogPracDlib.py" />
     <entry file="file://$PROJECT_DIR$/blogPrac.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/tkinter/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="40584">
-          <caret line="2139" selection-start-line="2139" selection-end-line="2139" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/cascade2000_42.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/tkinter/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/haarcascade_frontalface_default.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/haarcascade_eye.xml">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/ClickView.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -351,36 +284,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/pyautogui/__init__.py">
+    <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16245">
-          <caret line="855" selection-start-line="855" selection-end-line="855" />
+        <state relative-caret-position="-1406">
+          <caret line="114" column="22" selection-start-line="114" selection-start-column="22" selection-end-line="114" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/haarcascade_frontalface_default.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/haarcascade_eye.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/MouseController.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="45" column="18" lean-forward="true" selection-start-line="45" selection-start-column="18" selection-end-line="45" selection-end-column="18" />
+        <state relative-caret-position="513">
+          <caret line="29" column="81" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="81" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/EyeDectVerOne.py">
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/pyautogui/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="129" column="27" selection-start-line="129" selection-start-column="27" selection-end-line="129" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="245">
+          <caret line="824" selection-start-line="824" selection-end-line="825" selection-end-column="35" />
         </state>
       </provider>
     </entry>

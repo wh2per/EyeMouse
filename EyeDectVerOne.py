@@ -123,11 +123,11 @@ def mouseRatio(cx,cy,dir):
                 clickCount += 1
                 doubleCount += 1
 
-        if clickCount == 3 and clickbool==1:
+        if clickCount == 2 and clickbool==1:
             pyautogui.click(cx,cy)
             clickCount = 0
 
-        if doubleCount == 5 and clickbool==1:
+        if doubleCount == 3 and clickbool==1:
             pyautogui.doubleClick(cx,cy)
             doubleCount = 0
 
@@ -386,7 +386,11 @@ while True:
 
     if kb == ord('n'):  # 클릭 기능 토글
         print('click!')
-        clickbool *= -1
+        clickbool = 1
+
+    if kb == ord('m'):  # 클릭 기능 토글
+        print('no click!')
+        clickbool = -1
 
     # q를 누르면 종료
     if kb == ord('q'):
